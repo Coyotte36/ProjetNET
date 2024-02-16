@@ -1,0 +1,6 @@
+@Projet.NET_HostAddress = http://localhost:5265
+
+GET {{Projet.NET_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
