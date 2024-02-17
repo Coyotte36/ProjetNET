@@ -8,7 +8,7 @@ namespace Server.Controllers
     public class VehicleController : ControllerBase
     {
         [HttpGet]
-        public IActionResult GetVehicle()
+        public IActionResult Get()
         {
             return Ok();
         }

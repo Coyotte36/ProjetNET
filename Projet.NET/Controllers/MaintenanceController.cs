@@ -8,12 +8,10 @@ namespace Server.Controllers
     [ApiController]
     public class MaintenanceController : ControllerBase
     {
-        [HttpGet("FullMaintenance")]
-        public MaintenanceModel? GetFullRecipe(int recipeId)
+        [HttpGet]
+        public IActionResult Get()
         {
-            return RecipeFactory.ConvertToApiModel(_dataContext.Set<Recipe>()
-                .Include(x => x.Parameters)
-                .FirstOrDefault(x => x.Id == recipeId));
+            return Ok();
         }
     }
 }
