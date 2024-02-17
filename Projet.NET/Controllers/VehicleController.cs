@@ -5,7 +5,12 @@ namespace Projet.NET.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ValuesController : ControllerBase
+    public class VehicleController : ControllerBase
     {
+        [HttpGet]
+        public IActionResult GetVehicle()
+        {
+            return Ok();
+        }
     }
 }
