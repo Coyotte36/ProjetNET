@@ -1,0 +1,5 @@
+# Ignorer le répertoire .vs/
+.vs/
+
+# Ignorer le répertoire Projet.NET/obj/Release/
+Projet.NET/obj/
