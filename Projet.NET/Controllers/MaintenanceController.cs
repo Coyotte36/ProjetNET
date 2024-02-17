@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Shared.ApiModels;
 
-namespace Projet.NET.Controllers
+namespace Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
