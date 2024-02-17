@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Projet.NET")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+982de13872088efdad00f47b2cd919574198532b")]
 [assembly: System.Reflection.AssemblyProductAttribute("Projet.NET")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Projet.NET")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
