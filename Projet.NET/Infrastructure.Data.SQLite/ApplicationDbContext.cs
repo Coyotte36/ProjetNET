@@ -21,7 +21,6 @@ namespace Infrastructure.Data.SQLite
             modelBuilder
                 .Entity<VehicleModel>()
                 .HasKey(x => x.Id);
-            
         }
     }
 }

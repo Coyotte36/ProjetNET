@@ -8,5 +8,6 @@ namespace Server.Domain
         public string Brand { get; set; }
         public int MaintenanceFrequency { get; set; }
         public string Description { get; set; }
+        public IList<VehicleModel> Vehicle { get; set; } = new List<VehicleModel>();
     }
 }
