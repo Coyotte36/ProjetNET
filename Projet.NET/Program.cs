@@ -14,8 +14,10 @@ builder.Logging.ClearProviders();
 builder.Logging.AddSerilog(logger);
 
 // Database configuration
-builder.Services.AddDbContext<DbContext, ApplicationDbContext>(
-    c => c.UseSqlite("Data Source=D:\\ProjetNet\\ProjetNET\\Application.db;"));
+builder.Services.AddDbContext<DbContext, ApplicationDbContext>(o =>
+{
+    o.UseSqlite(Environment.GetEnvironmentVariable("DATABASE_URL"));
+});
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
