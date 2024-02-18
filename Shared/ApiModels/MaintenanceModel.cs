@@ -9,9 +9,10 @@ namespace Shared.ApiModels
 {
     public class MaintenanceModel
     {
+        public int Id { get; set; }
         public int MileageMaintenance { get; set; }
         public string WorksPerformed { get; set; }
-        public Vehicle VehicleConcerned { get; set; }        
+        public VehicleModel VehicleConcerned { get; set; }        
 
     }
 }

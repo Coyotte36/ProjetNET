@@ -10,11 +10,9 @@ namespace Shared.ApiModels
 {
     public class ModelModel
     {
-        public class Model
-        {
+            public int Id { get; set; }
             public string Brand { get; set; }
             public int MaintenanceFrequency { get; set; }
             public string Description { get; set; }
-        }
     }
 }
