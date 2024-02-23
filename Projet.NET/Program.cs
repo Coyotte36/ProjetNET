@@ -35,6 +35,13 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+app.UseBlazorFrameworkFiles();
+// Cette permet d’héberger des fichiers statics (css, js, …)
+app.UseStaticFiles();
+
+// Cette ligne existe déjà pour les contrôleurs WebAPI app.MapControllers();
+// Permet de rediriger toute adresse inconnue (dont / ) vers /index.html qui est la page par défaut de notre client
+app.MapFallbackToFile("index.html");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
