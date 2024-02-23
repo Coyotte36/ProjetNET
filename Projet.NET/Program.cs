@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Microsoft.OpenApi.Models;
 using Infrastructure.Data.SQLite;
+using DotNetEnv;
+
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
