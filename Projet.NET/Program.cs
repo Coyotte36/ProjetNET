@@ -22,6 +22,15 @@ builder.Services.AddDbContext<DbContext, ApplicationDbContext>(o =>
     o.UseSqlite(Environment.GetEnvironmentVariable("DATABASE_URL"));
 });
 
+// Add services to the container.
+
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -32,18 +41,15 @@ using (var scope = app.Services.CreateScope())
     context.Database.Migrate();
 }
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 app.UseBlazorFrameworkFiles();
 // Cette permet d’héberger des fichiers statics (css, js, …)
 app.UseStaticFiles();
+app.UseRouting();
 
 // Cette ligne existe déjà pour les contrôleurs WebAPI app.MapControllers();
 // Permet de rediriger toute adresse inconnue (dont / ) vers /index.html qui est la page par défaut de notre client
+app.MapRazorPages();
+app.MapControllers();
 app.MapFallbackToFile("index.html");
 
 // Configure the HTTP request pipeline.
