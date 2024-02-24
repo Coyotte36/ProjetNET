@@ -3,6 +3,8 @@ using Serilog;
 using Microsoft.OpenApi.Models;
 using Infrastructure.Data.SQLite;
 using DotNetEnv;
+using System.Linq;
+
 
 Env.Load();
 

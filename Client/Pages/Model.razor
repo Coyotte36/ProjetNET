@@ -1,7 +1,7 @@
 ﻿@page "/modeles"
 @inject NavigationManager NavigationManager
 
-<PageTitle>Véhicule</PageTitle>
+<PageTitle>Détail du véhicule</PageTitle>
 
 <div class="container">
     <div class="row">
@@ -16,12 +16,14 @@
             <div class="mt-3">
                 <table class="table table-striped table-bordered table-hover">
                     <thead class="thead-dark">
-                        <tr>
-                            <th>Marque</th>
-                            <th>Modèle</th>
-                            <th>Fréquence</th>
-                            <th>Actions</th>
-                        </tr>
+                    <tr>
+                        <th>Véhicule: @vehicle.Matriculation</th>
+                        <th>Entretiens</th>
+                    </tr>
+                    <tr>
+                            <th>@Maintenance.MileageMaintenance</th>
+                            <th>@Maintenance.WorksPerformed</th>
+                    </tr>
                     </thead>
                     <tbody>
                         <tr>
