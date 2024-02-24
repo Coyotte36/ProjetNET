@@ -5,13 +5,6 @@
 @inject IJSRuntime JSRuntime
 
 <PageTitle>Véhicule</PageTitle>
-
-@if(_vehicle == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
 <div class="container">
     <div class="row">
         <div class="col">
@@ -45,7 +38,6 @@ else
                         <tr>
                             <td></td>
                         </tr>
-                    </tbody>
                 </table>
             </div>
         </div>
@@ -54,8 +46,13 @@ else
 
 
 @code {
-    private void AjouterVehicule()
+
+    public IList<VehicleModel>? _vehicle;
+
+    protected override async Task OnInitializedAsync()
     {
-        // Ajouter la logique pour ajouter un nouveau véhicule ici
+        _vehicle = await HttpClient.GetFromJsonAsync<IList<VehicleModel>>("api/Recipe");
+
     }
+
 }
