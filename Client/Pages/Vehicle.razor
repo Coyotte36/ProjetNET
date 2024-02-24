@@ -1,8 +1,17 @@
 ﻿@page "/vehicules"
 @inject NavigationManager NavigationManager
+@inject HttpClient HttpClient
+@using Shared.ApiModels
+@inject IJSRuntime JSRuntime
 
 <PageTitle>Véhicule</PageTitle>
 
+@if(_vehicle == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
 <div class="container">
     <div class="row">
         <div class="col">
@@ -17,23 +26,22 @@
                 <table class="table table-striped table-bordered table-hover">
                     <thead class="thead-dark">
                     <tr>
+                        <th>Immatriculation</th>
                         <th>Marque</th>
                         <th>Modèle</th>
-                        <th>Immatriculation</th>
                         <th>Actions</th>
-                    </tr>
-                    <tr>
-                        @foreach (var vehicle in vehicleList)
-                        {
-                                <th>@vehicle.ModelID</th>
-                                <th>@vehicle.ModelModel</th>
-                                <th>@vehicle.Matriculation</th>
-                                <th>@Maintenance.WorksPerformed</th>
-                        }
-
                     </tr>
                     </thead>
                     <tbody>
+                    @foreach (var vehicle in _vehicle)
+                    {
+                        <tr>
+                            <td><a href="/vehicle/detail/@vehicle.Id">@vehicle.Matriculation</a></td>
+                            <td>@vehicle.ModelId.Brand</td>
+                            <td>@vehicle.Model</td>
+                        </tr>
+                    }
+                    </tbody>
                         <tr>
                             <td></td>
                         </tr>
