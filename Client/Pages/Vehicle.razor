@@ -1,15 +1,16 @@
-﻿@page "/"
+﻿@page "/vehicules"
 @inject NavigationManager NavigationManager
 
-
-<PageTitle>Accueil</PageTitle>
+<PageTitle>Véhicule</PageTitle>
 
 <div class="container">
     <div class="row">
         <div class="col">
             <!-- Texte "Véhicules en retard d'entretien" -->
-            <div class="mt-3">
-                <h2>Véhicules en retard d'entretien</h2>
+            <div class="mt-3 d-flex justify-content-between align-items-center">
+                <h2 class="mb-0">Véhicules</h2>
+                <button class="btn btn-primary" @onclick="AjouterVehicule">+</button>
+
             </div>
             <!-- Tableau -->
             <div class="mt-3">
@@ -19,16 +20,24 @@
                             <th>Marque</th>
                             <th>Modèle</th>
                             <th>Immatriculation</th>
-                            <th>Retard</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
-                            <tr>
-                                <td></td>
-                            </tr>
+                        <tr>
+                            <td></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
+
+
+@code {
+    private void AjouterVehicule()
+    {
+        // Ajouter la logique pour ajouter un nouveau véhicule ici
+    }
+}
