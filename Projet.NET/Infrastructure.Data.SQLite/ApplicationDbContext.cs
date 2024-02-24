@@ -1,6 +1,7 @@
 ﻿using Shared.ApiModels;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata;
+using Server.Domain;
 
 namespace Infrastructure.Data.SQLite
 {
@@ -11,15 +12,15 @@ namespace Infrastructure.Data.SQLite
             base.OnModelCreating(modelBuilder);
 
             modelBuilder
-                .Entity<MaintenanceModel>()
+                .Entity<Maintenance>()
                 .HasKey(x => x.Id);
 
             modelBuilder
-                .Entity<ModelModel>()
+                .Entity<Model>()
                 .HasKey(x => x.Id);
 
             modelBuilder
-                .Entity<VehicleModel>()
+                .Entity<Vehicle>()
                 .HasKey(x => x.Id);
         }
     }

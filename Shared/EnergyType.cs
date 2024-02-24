@@ -2,9 +2,9 @@
 
 public enum EnergyType
 {
-    Diesel,
-    Essence,
-    Electrique,
-    Hybride,
-    GPL
+    Diesel = 0,
+    Essence = 1,
+    Electrique = 2,
+    Hybride = 3,
+    GPL = 4
 }

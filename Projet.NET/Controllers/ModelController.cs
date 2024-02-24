@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Server.Domain;
+using Shared;
 
 namespace Server.Controllers
 {
@@ -29,6 +30,24 @@ namespace Server.Controllers
             var parameter = ModelRepository.Find(id);
             if (parameter == null) return NotFound();
             return Ok(parameter);
+        }
+
+        [HttpPost("AddModel")]
+        public IActionResult CreateModel(string name, BrandName brand, int maintenanceFrequency, string description)
+        {
+
+            var newModel = new Model()
+            {
+                Name = name,
+                Brand = brand,
+                MaintenanceFrequency = maintenanceFrequency,
+                Description = description
+            };
+
+            ModelRepository.Add(newModel);
+            _context.SaveChanges();
+
+            return Ok();
         }
     }
 }
