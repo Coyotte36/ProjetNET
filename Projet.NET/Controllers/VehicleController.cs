@@ -34,7 +34,7 @@ namespace Server.Controllers
         }
 
         [HttpPost("AddVehicle")]
-        public IActionResult CreateVehicle(int modelId, int year, int mileage, string matriculation)
+        public IActionResult CreateVehicle(Model modelId, int year, int mileage, string matriculation)
         {
 
             var newVehicle = new Vehicle()

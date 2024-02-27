@@ -11,6 +11,7 @@ namespace Shared.ApiModels
     public class ModelModel
     {
             public int Id { get; set; }
+            public string Name { get; set; }
             public BrandName Brand { get; set; }
             public int MaintenanceFrequency { get; set; }
             public string Description { get; set; }

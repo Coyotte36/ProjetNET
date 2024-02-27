@@ -7,7 +7,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Server", "Projet.NET\Server
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shared", "Shared\Shared.csproj", "{DC36AF58-1EB4-480F-8813-9D771A61D8A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{925B700A-5528-4FA9-9CCD-ED74C49B85DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Client", "Client\Client.csproj", "{925B700A-5528-4FA9-9CCD-ED74C49B85DD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DC36AF58-1EB4-480F-8813-9D771A61D8A8} = {DC36AF58-1EB4-480F-8813-9D771A61D8A8}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
