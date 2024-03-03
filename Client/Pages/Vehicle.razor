@@ -31,10 +31,11 @@
                     <tbody>
                         @foreach (var vehicle in _vehicle)
                         {
+                            var model = _model.FirstOrDefault(m => m.Id == vehicle.ModelId);
                             <tr>
                                 <td><a href="/vehicle/detail/@vehicle.Id">@vehicle.Matriculation</a></td>
-@*                                 <td>@(vehicle.Model != null ? vehicle.Model.Name : "Unknown")</td>
-                                <td>@(vehicle.Model != null ? vehicle.Model.Brand : "Unknown")</td> *@
+                                <td>@model.Name</td>
+                                <td>@model.Brand</td>
                             </tr>
                         }
                     </tbody>

@@ -23,7 +23,7 @@
                         <tr>
                             <th>Marque</th>
                             <th>Modèle</th>
-                            <th>Fréquence</th>
+                            <th>Fréquence de maintenance</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -34,7 +34,10 @@
                                 <td>@model.Brand</td>
                                 <td>@model.Name</td>
                                 <td>@model.MaintenanceFrequency km</td>
-                                <td><button class="btn btn-danger" @onclick="@(()=>OnDelete(model))">Delete</button></td>
+                                <td>
+                                    <button class="btn btn-info" @onclick="@(()=>OnDetails(model))">Details</button>
+                                    <button class="btn btn-danger" @onclick="@(()=>OnDelete(model))">Delete</button>
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -174,6 +177,13 @@
         _modalMode = ModalMode.Closed;
 
         _model = await HttpClient.GetFromJsonAsync<IList<ModelModel>>("api/Model");
+    }
+
+    private async Task OnDetails(ModelModel model)
+    {
+        var detailsMessage = $"Modèle : {model.Name}\nMarque : {model.Brand}\nFréquence de maintenance : {model.MaintenanceFrequency} km\nDescription : {model.Description}";
+
+        await JSRuntime.InvokeVoidAsync("alert", detailsMessage);
     }
 
 
