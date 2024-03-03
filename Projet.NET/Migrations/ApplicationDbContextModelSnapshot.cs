@@ -36,7 +36,7 @@ namespace Server.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("Maintenance");
+                    b.ToTable("Maintenances");
                 });
 
             modelBuilder.Entity("Server.Domain.Model", b =>
@@ -61,7 +61,7 @@ namespace Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Model");
+                    b.ToTable("Models");
                 });
 
             modelBuilder.Entity("Server.Domain.Vehicle", b =>
@@ -90,7 +90,7 @@ namespace Server.Migrations
 
                     b.HasIndex("ModelId");
 
-                    b.ToTable("Vehicle");
+                    b.ToTable("Vehicles");
                 });
 
             modelBuilder.Entity("Server.Domain.Maintenance", b =>
@@ -107,17 +107,12 @@ namespace Server.Migrations
             modelBuilder.Entity("Server.Domain.Vehicle", b =>
                 {
                     b.HasOne("Server.Domain.Model", "Model")
-                        .WithMany("Vehicles")
+                        .WithMany()
                         .HasForeignKey("ModelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Model");
-                });
-
-            modelBuilder.Entity("Server.Domain.Model", b =>
-                {
-                    b.Navigation("Vehicles");
                 });
 
             modelBuilder.Entity("Server.Domain.Vehicle", b =>

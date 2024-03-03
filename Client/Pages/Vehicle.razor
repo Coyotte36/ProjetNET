@@ -3,6 +3,7 @@
 @inject HttpClient HttpClient
 @using Shared
 @using Shared.ApiModels
+@inject IJSRuntime JSRuntime
 
 @inject IJSRuntime JSRuntime
 
@@ -13,7 +14,7 @@
             <!-- Texte "Véhicules en retard d'entretien" -->
             <div class="mt-3 d-flex justify-content-between align-items-center">
                 <h2 class="mb-0">Véhicules</h2>
-                <button class="btn btn-primary">+</button>
+                <button class="btn btn-primary" @onclick="@(OpenAddPopup)">+</button>
 
             </div>
             <!-- Tableau -->
@@ -32,8 +33,8 @@
                         {
                             <tr>
                                 <td><a href="/vehicle/detail/@vehicle.Id">@vehicle.Matriculation</a></td>
-                                <td>@vehicle.ModelId.Model.Brand</td>
-                                <td>@vehicle.ModelId.Model.Brand</td>
+@*                                 <td>@(vehicle.Model != null ? vehicle.Model.Name : "Unknown")</td>
+                                <td>@(vehicle.Model != null ? vehicle.Model.Brand : "Unknown")</td> *@
                             </tr>
                         }
                     </tbody>
@@ -42,19 +43,142 @@
                         </tr>
                 </table>
             </div>
+            <div class="modal fade show " id="myModal" style=" display: @(_modalMode==ModalMode.Closed? "none":"block");">
+                <div class="modal-dialog bg-light" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            @if (_modalMode == ModalMode.Add)
+                            {
+                                <h3>Crer un nouveau vehicule</h3>
+                            }
+                        </div>
+                        <div class="modal-body">
+                            <form>
+                                <div class="form-group">
+                                    <label for="vehicleMatriculation">Immatriculation :</label>
+                                    <input type="text" class="form-control" id="vehicleMatriculation" @bind="@NewMatriculation" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="vehicleModel">Modele :</label>
+                                    <select class="form-control" id="vehicleModel" @bind="@NewModelId">
+                                        @foreach (var model in _model)
+                                        {
+                                            <option value="@model.Id">@model.Name</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="vehicleYear">Année :</label>
+                                    <input type="number" class="form-control" id="vehicleYear" @bind="@NewYear" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="vehicleMileage">Kilométrage :</label>
+                                    <textarea class="form-control" id="vehicleMileage" rows="3" @bind="@NewMileage"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="vehicleEnergie">Energie :</label>
+                                    <select class="form-control" id="vehicleEnergie" @bind="@NewEnergie">
+                                        @foreach (var vehicle in Enum.GetValues(typeof(EnergyType)))
+                                        {
+                                            <option value="@vehicle">@vehicle.ToString()</option>
+                                        }
+                                    </select>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn-primary" @onclick="@OnSave">Save</button>
+                            <button class="btn-primary" @onclick="@OnCancel">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+
         </div>
     </div>
-</div>
 
 
 @code {
 
-    public IList<VehicleModel> _vehicle;
+    private enum ModalMode
+    {
+        Add,
+        Closed
+    }
+
+    private ModalMode _modalMode = ModalMode.Closed;
+
+    private VehicleModel _selectedVehicle;
+
+    public string NewMatriculation { get; set; }
+
+    public int NewYear { get; set; }
+
+    public int NewMileage { get; set; }
+
+    public EnergyType NewEnergie { get; set; }
+
+    public int NewModelId { get; set; }
+
+
+
+
+    public IList<ModelModel> _model;
+
+
+    public IList<VehicleModel>_vehicle;
 
     protected override async Task OnInitializedAsync()
     {
         _vehicle = await HttpClient.GetFromJsonAsync<IList<VehicleModel>>("api/Vehicle");
+        _model = await HttpClient.GetFromJsonAsync<IList<ModelModel>>("api/Model");
 
+
+    }
+
+    private async Task OpenAddPopup()
+    {
+        NewMatriculation = "";
+        _modalMode = ModalMode.Add;
+    }
+
+    private async Task OnCancel()
+    {
+        _modalMode = ModalMode.Closed;
+    }
+
+    private async Task OnSave()
+    {
+        switch (_modalMode)
+        {
+            case ModalMode.Add:
+                await OnAdd();
+                break;
+        }
+    }
+
+    private async Task OnAdd()
+    {
+        var vehicle = new VehicleModel
+            {
+                Matriculation = NewMatriculation,
+                ModelId = NewModelId,
+                Year = NewYear,
+                Mileage = NewMileage,
+                Energie = NewEnergie
+            };
+
+        var response = await HttpClient.PostAsync($"api/Vehicle/AddVehicle?matriculation={Uri.EscapeDataString(NewMatriculation)}&modelName={Uri.EscapeDataString(NewModelId.ToString())}&year={Uri.EscapeDataString(NewYear.ToString())}&mileage={Uri.EscapeDataString(NewMileage.ToString())}&energie={Uri.EscapeDataString(NewEnergie.ToString())}", null);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", response.ReasonPhrase);
+        }
+
+        _modalMode = ModalMode.Closed;
+
+        _vehicle = await HttpClient.GetFromJsonAsync<IList<VehicleModel>>("api/Vehicle");
     }
 
 }

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Server.Domain;
 using Shared.ApiModels;
 using Shared;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Server.Controllers
 {
@@ -20,33 +21,41 @@ namespace Server.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            var maintenance = VehicleRepository.ToList();
-            if (maintenance.Count == 0) return NoContent();
-            return Ok(maintenance);
+            var vehicles = VehicleRepository.ToList();
+            if (vehicles.Count == 0) return NoContent();
+            return Ok(vehicles);
         }
 
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var parameter = VehicleRepository.Find(id);
-            if (parameter == null) return NotFound();
-            return Ok(parameter);
+            var vehicle = VehicleRepository.Find(id);
+            if (vehicle == null) return NotFound();
+            return Ok(vehicle);
         }
 
         [HttpPost("AddVehicle")]
-        public IActionResult CreateVehicle(Model modelId, int year, int mileage, string matriculation)
+        public IActionResult CreateVehicle(string matriculation, string modelName, int year, int mileage, EnergyType energie)
         {
+            // Recherche du modèle par son nom dans la base de données
+            var model = _context.Models.FirstOrDefault(m => m.Name == modelName);
+            if (model == null)
+            {
+                return BadRequest("Invalid model name.");
+            }
 
+            // Création du nouveau véhicule avec le modèle trouvé
             var newVehicle = new Vehicle()
             {
-                ModelId = modelId,
+                Matriculation = matriculation,
+                ModelId = model.Id,
                 Year = year,
                 Mileage = mileage,
-                Matriculation = matriculation,
-                Energie = EnergyType.Diesel
+                Energie = energie
             };
 
-            VehicleRepository.Add(newVehicle);
+            // Ajout du nouveau véhicule à la base de données
+            _context.Vehicles.Add(newVehicle);
             _context.SaveChanges();
 
             return Ok();

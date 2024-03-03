@@ -1,14 +1,16 @@
 ﻿using Shared.ApiModels;
 using Shared;
 using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Server.Domain
 {
     public class Vehicle
     {
         public int Id { get; set; }
+/*        public Model Model { get; set; }*/
+
         public int ModelId { get; set; }
-        public Model Model { get; set; }
         public int Year { get; set; }
         public int Mileage { get; set; }
         public string Matriculation { get; set; }

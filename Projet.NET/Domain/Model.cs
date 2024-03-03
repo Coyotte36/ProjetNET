@@ -10,6 +10,5 @@ namespace Server.Domain
         public BrandName Brand { get; set; }
         public int MaintenanceFrequency { get; set; }
         public string Description { get; set; }
-        public IList<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
     }
 }

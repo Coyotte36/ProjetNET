@@ -19,17 +19,17 @@ namespace Server.Controllers
         [HttpGet]
         public IActionResult Get()
         {
-            var maintenance = ModelRepository.ToList();
-            if (maintenance.Count == 0) return NoContent();
-            return Ok(maintenance);
+            var models = ModelRepository.ToList();
+            if (models.Count == 0) return NoContent();
+            return Ok(models);
         }
 
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var parameter = ModelRepository.Find(id);
-            if (parameter == null) return NotFound();
-            return Ok(parameter);
+            var model = ModelRepository.Find(id);
+            if (model == null) return NotFound();
+            return Ok(model);
         }
 
         [HttpPost("AddModel")]
@@ -49,5 +49,16 @@ namespace Server.Controllers
 
             return Ok();
         }
+
+        [HttpDelete("{id}")]
+        public void DeleteModel(int id)
+        {
+            _context.Set<Model>()
+                .Remove(new Model { Id = id });
+
+            _context.SaveChanges();
+
+        }
+
     }
 }
