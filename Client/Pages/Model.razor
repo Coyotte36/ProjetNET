@@ -36,6 +36,7 @@
                                 <td>@model.MaintenanceFrequency km</td>
                                 <td>
                                     <button class="btn btn-info" @onclick="@(()=>OnDetails(model))">Details</button>
+                                    <button class="btn btn-edit" @onclick="@(()=>OpenEditPopup(model))">Editer</button>
                                     <button class="btn btn-danger" @onclick="@(()=>OnDelete(model))">Delete</button>
                                 </td>
                             </tr>
@@ -93,6 +94,7 @@
     private enum ModalMode
     {
         Add,
+        Edit,
         Closed
     }
 
@@ -142,6 +144,16 @@
         _modalMode = ModalMode.Add;
     }
 
+    private async Task OpenEditPopup(ModelModel model)
+    {
+        NewName = model.Name;
+        NewBrand = model.Brand;
+        NewMaintenanceFrequency = model.MaintenanceFrequency;
+        NewDescription = model.Description;
+
+        _modalMode = ModalMode.Edit;
+    }
+
     private async Task OnCancel()
     {
         _modalMode = ModalMode.Closed;
@@ -154,6 +166,32 @@
             case ModalMode.Add:
                 await OnAdd();
                 break;
+            case ModalMode.Edit:
+                await OnEdit(_selectedModel);
+                break;
+        }
+    }
+
+    private async Task OnEdit(ModelModel model)
+    {
+        var editedModel = new ModelModel
+            {
+                Id = model.Id,
+                Name = NewName,
+                Brand = NewBrand,
+                MaintenanceFrequency = NewMaintenanceFrequency,
+                Description = NewDescription
+            };
+
+        var response = await HttpClient.PutAsJsonAsync($"api/Model/Edit/{model.Id}", editedModel);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", response.ReasonPhrase);
+        }
+        else
+        {
+            _modalMode = ModalMode.Closed;
         }
     }
 
@@ -185,6 +223,7 @@
 
         await JSRuntime.InvokeVoidAsync("alert", detailsMessage);
     }
+
 
 
 }
