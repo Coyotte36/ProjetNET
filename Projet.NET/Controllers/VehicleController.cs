@@ -60,6 +60,16 @@ namespace Server.Controllers
 
             return Ok();
         }
+        
+        [HttpDelete("{id}")]
+        public void DeleteVehicle(int id)
+        {
+            _context.Set<Vehicle>()
+                .Remove(new Vehicle { Id = id });
+
+            _context.SaveChanges();
+
+        }
 
     }
 }
