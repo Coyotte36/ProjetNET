@@ -5,7 +5,7 @@
 namespace Server.Migrations
 {
     /// <inheritdoc />
-    public partial class Migrationdb : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -41,12 +41,6 @@ namespace Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Vehicles", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Vehicles_Models_ModelId",
-                        column: x => x.ModelId,
-                        principalTable: "Models",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -74,11 +68,6 @@ namespace Server.Migrations
                 name: "IX_Maintenances_VehicleId",
                 table: "Maintenances",
                 column: "VehicleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Vehicles_ModelId",
-                table: "Vehicles",
-                column: "ModelId");
         }
 
         /// <inheritdoc />
@@ -88,10 +77,10 @@ namespace Server.Migrations
                 name: "Maintenances");
 
             migrationBuilder.DropTable(
-                name: "Vehicles");
+                name: "Models");
 
             migrationBuilder.DropTable(
-                name: "Models");
+                name: "Vehicles");
         }
     }
 }
