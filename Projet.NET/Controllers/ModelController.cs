@@ -20,7 +20,7 @@ namespace Server.Controllers
         public IActionResult Get()
         {
             var models = ModelRepository.ToList();
-            if (models.Count == 0) return NoContent();
+            if (models.Count == 0) return Ok(new List<Vehicle>());
             return Ok(models);
         }
 

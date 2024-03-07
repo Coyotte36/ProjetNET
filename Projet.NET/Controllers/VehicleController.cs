@@ -22,7 +22,7 @@ namespace Server.Controllers
         public IActionResult Get()
         {
             var vehicles = VehicleRepository.ToList();
-            if (vehicles.Count == 0) return NoContent();
+            if (vehicles.Count == 0) return Ok(new List<Vehicle>());
             return Ok(vehicles);
         }
 
