@@ -5,6 +5,7 @@ using Shared.ApiModels;
 using System.Reflection.Metadata;
 using Server.Domain;
 using Infrastructure.Data.SQLite;
+using Shared;
 
 namespace Server.Controllers
 {
@@ -21,16 +22,41 @@ namespace Server.Controllers
         public IActionResult Get()
         {
             var maintenance = MaintenanceRepository.ToList();
-            if (maintenance.Count == 0) return NoContent();
+            if (maintenance.Count == 0) return Ok(new List<Maintenance>());
             return Ok(maintenance);
         }
 
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var parameter = MaintenanceRepository.Find(id);
-            if (parameter == null) return NotFound();
-            return Ok(parameter);
+            var maintenance = MaintenanceRepository.Find(id);
+            if (maintenance == null) return NotFound();
+            return Ok(maintenance);
+        }
+        
+        [HttpPost("AddMaintenance")]
+        public IActionResult CreateMaintenance(int vehicleId, int mileageMaintenance, string worksPerformed)
+        {
+            // Recherche du véhicule par son identifiant
+            var vehicle = _context.Vehicles.FirstOrDefault(v => v.Id == vehicleId);
+            if (vehicle == null)
+            {
+                return NotFound("Vehicle not found.");
+            }
+
+            // Création de la nouvelle maintenance
+            var maintenance = new Maintenance()
+            {
+                VehicleId = vehicleId,
+                MileageMaintenance = mileageMaintenance,
+                WorksPerformed = worksPerformed
+            };
+
+            // Ajout de la maintenance à la base de données
+            _context.Maintenances.Add(maintenance);
+            _context.SaveChanges();
+
+            return Ok();
         }
     }
 }
