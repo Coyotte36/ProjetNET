@@ -60,7 +60,7 @@ namespace Server.Controllers
 
         }
 
-        [HttpPut("/Edit/{id}")]
+        [HttpPut("Edit/{id}")]
         public IActionResult UpdateModel(int id, string name, BrandName brand, int maintenanceFrequency, string description)
         {
             var existingModel = ModelRepository.FirstOrDefault(x => x.Id == id);
