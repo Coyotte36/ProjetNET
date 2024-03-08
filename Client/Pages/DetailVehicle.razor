@@ -1,6 +1,242 @@
-@page "/DetailVehicle"
-<h3>DetailVehicle</h3>
+@page "/vehicle/detail/{id}"
+@inject NavigationManager NavigationManager
+@inject HttpClient HttpClient
+@using Shared.ApiModels
+@using Shared
+@inject IJSRuntime JSRuntime
+
+<a href="javascript:history.back()" class="btn btn-primary">
+    <i class="fas fa-angle-left"></i> Retour
+</a>
+<br><br>
+<h3>
+    Detail du vehicule "@Vehicle.Matriculation"
+</h3>
+<br/>
+
+<div class="row">
+    @if(!_isEditMode) {
+    <div class="col">
+        <h4 class="text-center mb-3"><u>Informations du véhicule</u></h4>
+        <br/>
+        <table class="table">
+            <tbody>
+            <tr>
+                <th>Matriculation</th>
+                <td>@Vehicle.Matriculation</td>
+            </tr>
+            <tr>
+                <th>Marque</th>
+                <td>@Model.Brand</td>
+            </tr>
+            <tr>
+                <th>Modèle</th>
+                <td>@Model.Name</td>
+            </tr>
+            <tr>
+                <th>Année</th>
+                <td>@Vehicle.Year</td>
+            </tr>
+            <tr>
+                <th>Kilométrage</th>
+                <td>@Vehicle.Mileage km</td>
+            </tr>
+            <tr>
+                <th>Energie</th>
+                <td>@Vehicle.Energie</td>
+            </tr>
+            </tbody>
+        </table>
+        <button class="btn btn-secondary" @onclick="@(ToggleEditMode)">Editer</button>
+    </div>
+    }
+    else
+    {
+        <form>
+            <div class="form-group">
+                <label for="matriculation">Matriculation :</label>
+                <input type="text" class="form-control" id="matriculation" @bind="@Vehicle.Matriculation"/>
+            </div>
+            <div class="form-group">
+                <label for="vehiclemodel">Modèle :</label>
+                <select class="form-control" id="vehiclemodel" @bind="@NewModelId">
+                    @foreach (var model in _model)
+                    {
+                        <option value="@model.Id">@model.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="brand">Année :</label>
+                <input type="text" class="form-control" id="brand" @bind="@Vehicle.Year"/>
+            </div>
+            <div class="form-group">
+                <label for="brand">Kilométrage :</label>
+                <input type="text" class="form-control" id="brand" @bind="@Vehicle.Mileage"/>
+            </div>
+            <div class="form-group">
+                <label for="vehicleEnergie">Energie :</label>
+                <select class="form-control" id="vehicleEnergie" @bind="@NewEnergie">
+                    @foreach (var vehicle in Enum.GetValues(typeof(EnergyType)))
+                    {
+                        <option value="@vehicle">@vehicle.ToString()</option>
+                    }
+                </select>
+            </div>
+        </form>
+        <button class="btn btn-primary" @onclick="@(SaveChanges)">Enregistrer</button>
+        <button class="btn btn-secondary" @onclick="@(ToggleEditMode)">Annuler</button>
+    }
+    <div class="col">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="text-center mb-0"><u>Entretien</u></h4>
+            <button class="btn btn-success" @onclick="@(OpenAddPopup)">
+                <i class="fas fa-plus">+</i>
+            </button>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Kilométrage lors de l'entretien</th>
+                <th>Travaux effectués</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var maintenance in _maintenance)
+            {
+                <tr>
+                    <td>@maintenance.MileageMaintenance</td>
+                    <td>@maintenance.WorksPerformed</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade show " id="myModal" style=" display: @(_modalMode == ModalMode.Closed ? "none" : "block");">
+    <div class="modal-dialog bg-light" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                @if (_modalMode == ModalMode.Add)
+                {
+                    <h3>Créer un entretien</h3>
+                }
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="mileageMaintenance">Kilométrage lors de l'entretien :</label>
+                        <input type="number" class="form-control" id="mileageMaintenance" @bind="@NewMileageMaintenance" />
+                    </div>
+                    <div class="form-group">
+                        <label for="worksPerformed">Travaux effectués :</label>
+                        <textarea class="form-control" id="worksPerformed" rows="3" @bind="@NewWorksPerformed"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-primary" @onclick="@OnSave">Save</button>
+                <button class="btn-primary" @onclick="@OnCancel">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @code {
     
+    private bool _isEditMode = false;
+    
+    private void ToggleEditMode()
+    {
+        _isEditMode = !_isEditMode;
+    }
+    
+    private async Task SaveChanges()
+    {
+        _isEditMode = false; 
+    }
+
+    private enum ModalMode
+    {
+        Add,
+        Closed
+    }
+    private ModalMode _modalMode = ModalMode.Closed;
+    
+    public EnergyType NewEnergie { get; set; }
+    public int NewModelId { get; set; }
+
+
+    private VehicleModel Vehicle;
+    private ModelModel Model;
+    private MaintenanceModel Maintenance;
+
+    [Parameter]
+    public string Id { get; set; }
+
+    public int NewMileageMaintenance { get; set; }
+    public string NewWorksPerformed { get; set; }
+
+    public IList<MaintenanceModel> _maintenance;
+    public IList<ModelModel> _model;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(Id))
+        {
+            int vehicleId;
+            if (int.TryParse(Id, out vehicleId))
+            {
+                Vehicle = await HttpClient.GetFromJsonAsync<VehicleModel>($"api/Vehicle/{vehicleId}");
+                Model = await HttpClient.GetFromJsonAsync<ModelModel>($"api/Model/{Vehicle.ModelId}");
+                _maintenance = await HttpClient.GetFromJsonAsync<IList<MaintenanceModel>>($"api/Maintenance");
+                _model = await HttpClient.GetFromJsonAsync<IList<ModelModel>>($"api/Model");
+
+            }
+        }
+    }
+
+    private async Task OpenAddPopup()
+    {
+        NewMileageMaintenance = 0;
+        _modalMode = ModalMode.Add;
+    }
+
+    private async Task OnCancel()
+    {
+        _modalMode = ModalMode.Closed;
+    }
+
+    private async Task OnSave()
+    {
+        switch (_modalMode)
+        {
+            case ModalMode.Add:
+                await OnAdd();
+                break;
+        }
+    }
+
+    private async Task OnAdd()
+    {
+        var maintenance = new MaintenanceModel
+        {
+            VehicleId = Vehicle.Id,
+            MileageMaintenance = NewMileageMaintenance,
+            WorksPerformed = NewWorksPerformed
+        };
+
+        var response = await HttpClient.PostAsync($"api/Maintenance/AddMaintenance?vehicleId={Uri.EscapeDataString(Vehicle.Id.ToString())}&mileageMaintenance={Uri.EscapeDataString(NewMileageMaintenance.ToString())}&worksPerformed={Uri.EscapeDataString(NewWorksPerformed)}", null);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", response.ReasonPhrase);
+        }
+
+        _modalMode = ModalMode.Closed;
+        _maintenance = await HttpClient.GetFromJsonAsync<IList<MaintenanceModel>>("api/Maintenance");
+    }
 }

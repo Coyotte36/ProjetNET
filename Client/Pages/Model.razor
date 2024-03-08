@@ -13,7 +13,7 @@
             <!-- Text "Top" -->
             <div class="mt-3 d-flex justify-content-between align-items-center">
                 <h2 class="mb-0">Modèles</h2>
-                <button class="btn btn-primary" @onclick="@(OpenAddPopup)">+</button>
+                <button class="btn btn-success" @onclick="@(OpenAddPopup)">+</button>
 
             </div>
             <!-- Table -->
@@ -36,7 +36,7 @@
                                 <td>@model.MaintenanceFrequency km</td>
                                 <td>
                                     <button class="btn btn-info" @onclick="@(()=>OnDetails(model))">Details</button>
-                                    <button class="btn btn-edit" @onclick="@(()=>OpenEditPopup(model))">Editer</button>
+                                    <button class="btn btn-secondary" @onclick="@(()=>OpenEditPopup(model))">Editer</button>
                                     <button class="btn btn-danger" @onclick="@(()=>OnDelete(model))">Delete</button>
                                 </td>
                             </tr>
@@ -123,7 +123,7 @@
     private async Task OnDelete(ModelModel model)
     {
         var popupResult = await JSRuntime.InvokeAsync<bool>
-            ("confirm", $"Are you sure you want to delete the recipe '{model.Name}'?");
+            ("confirm", $"Are you sure you want to delete the model '{model.Name}'?");
 
         if (popupResult == true)
         {
@@ -146,6 +146,7 @@
 
     private async Task OpenEditPopup(ModelModel model)
     {
+        _selectedModel = model;
         NewName = model.Name;
         NewBrand = model.Brand;
         NewMaintenanceFrequency = model.MaintenanceFrequency;
@@ -183,7 +184,7 @@
                 Description = NewDescription
             };
 
-        var response = await HttpClient.PutAsJsonAsync($"api/Model/Edit/{model.Id}", editedModel);
+        var response = await HttpClient.PutAsJsonAsync($"api/Model/Edit/{model.Id}?name={Uri.EscapeDataString(NewName)}&brand={Uri.EscapeDataString(NewBrand.ToString())}&maintenanceFrequency={Uri.EscapeDataString(NewMaintenanceFrequency.ToString())}&description={Uri.EscapeDataString(NewDescription)}", editedModel);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -192,6 +193,7 @@
         else
         {
             _modalMode = ModalMode.Closed;
+            _model = await HttpClient.GetFromJsonAsync<IList<ModelModel>>("api/Model");
         }
     }
 
