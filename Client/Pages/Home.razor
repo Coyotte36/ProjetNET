@@ -28,10 +28,26 @@
                     @foreach (var vehicle in _vehicle)
                     {
                         var model = _model.FirstOrDefault(m => m.Id == vehicle.ModelId);
+                        var maintenance = _maintenance.FirstOrDefault(m => m.VehicleId == vehicle.Id);
+                        if (model != null && maintenance != null)
+                        {
+                            var maintenanceDelay = maintenance.MileageMaintenance + model.MaintenanceFrequency - vehicle.Mileage;
+                            if (maintenanceDelay <= 0)
+                            {
+                                <tr>
+                                    <td>@model.Brand</td>
+                                    <td>@model.Name</td>
+                                    <td>
+                                        <a href="/vehicle/detail/@vehicle.Id">@vehicle.Matriculation</a>
+                                    </td>
+                                    <td>@maintenanceDelay kms</td>
+                                </tr>
+                            }
+                        }
                         if (model != null)
                         {
-                            var maintenanceDelay = vehicle.Mileage - model.MaintenanceFrequency;
-                            if (maintenanceDelay > 0)
+                            var maintenanceDelay = model.MaintenanceFrequency - vehicle.Mileage;
+                            if (maintenanceDelay <= 0)
                             {
                                 <tr>
                                     <td>@model.Brand</td>
