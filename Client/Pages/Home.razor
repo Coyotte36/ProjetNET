@@ -1,6 +1,9 @@
 ﻿@page "/"
 @inject NavigationManager NavigationManager
+@inject HttpClient HttpClient
 @using Shared
+@using Shared.ApiModels
+@inject IJSRuntime JSRuntime
 <PageTitle>Accueil</PageTitle>
 
 <div class="container">
@@ -20,25 +23,43 @@
                         <th>Immatriculation</th>
                         <th>Retard</th>
                     </tr>
-                    <tr>
-@*                         @foreach (var vehicle in vehicleList){
-                        @if (Maintenance.EuhJesaispas = < 0 )
-                        {
-                            <th>@vehicle.ModelID</th>
-                            <th>@vehicle.ModelModel</th>
-                            <th>@vehicle.Matriculation</th>
-                            <th>@vehicle.Maintenance</th>
-                        }
-                        } *@
-                    </tr>
                     </thead>
                     <tbody>
-                            <tr>
-                                <td></td>
-                            </tr>
+                    @foreach (var vehicle in _vehicle)
+                    {
+                        var model = _model.FirstOrDefault(m => m.Id == vehicle.ModelId);
+                        var maintenance = _maintenance.FirstOrDefault(m => m.Id == model.Id);
+                        if (maintenance != null)
+                        {
+                            var maintenanceDelay = model.MaintenanceFrequency - maintenance.MileageMaintenance;                            if (maintenanceDelay > 0)
+                            {
+                                <tr>
+                                    <td>@model.Brand</td>
+                                    <td>@model.Name</td>
+                                    <td>@vehicle.Matriculation</td>
+                                    <td>@maintenanceDelay km</td>
+                                </tr>
+                            }
+                        }
+                    }
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
 </div>
+
+@code {
+    public IList<VehicleModel>_vehicle;
+    public IList<ModelModel> _model;
+    public IList<MaintenanceModel> _maintenance;
+
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _vehicle = await HttpClient.GetFromJsonAsync<IList<VehicleModel>>("api/Vehicle");
+        _model = await HttpClient.GetFromJsonAsync<IList<ModelModel>>("api/Model");
+        _maintenance = await HttpClient.GetFromJsonAsync<IList<MaintenanceModel>>($"api/Maintenance");
+
+    }
+}
