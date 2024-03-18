@@ -41,6 +41,17 @@ namespace Server.Controllers
         [HttpPost("AddVehicle")]
         public IActionResult CreateVehicle(string matriculation, string modelName, int year, int mileage, EnergyType energie)
         {
+            
+            if (matriculation.Length < 7 || matriculation.Length > 9)
+            {
+                return BadRequest("L'immatriculation doit avoir entre 7 et 9 caractères.");
+            }
+            
+            if (mileage <= 0 )
+            {
+                return BadRequest("Le kilométrage doit être un nombre positif");
+            }
+            
             // Recherche du modèle par son nom dans la base de données
             var model = _context.Models.FirstOrDefault(m => m.Name == modelName);
             if (model == null)

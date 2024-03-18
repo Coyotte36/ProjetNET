@@ -211,7 +211,8 @@
 
         if (!response.IsSuccessStatusCode)
         {
-            await JSRuntime.InvokeVoidAsync("alert", response.ReasonPhrase);
+            string responseBody = await response.Content.ReadAsStringAsync();
+            await JSRuntime.InvokeVoidAsync("alert", responseBody);  
         }
 
         _modalMode = ModalMode.Closed;

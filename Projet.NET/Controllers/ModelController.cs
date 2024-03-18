@@ -35,6 +35,11 @@ namespace Server.Controllers
         [HttpPost("AddModel")]
         public IActionResult CreateModel(string name, BrandName brand, int maintenanceFrequency, string description)
         {
+            
+            if (name.Length < 1)
+            {
+                return BadRequest("Le nom du modèle doit avoir au moins 1 caractère");
+            }
 
             var newModel = new Model()
             {
