@@ -179,8 +179,8 @@
     public int NewMileageMaintenance { get; set; }
     public string NewWorksPerformed { get; set; }
 
-    public IList<MaintenanceModel> _maintenance;
     public IList<ModelModel> _model;
+    public IList<MaintenanceModel> _maintenance;
 
 
     protected override async Task OnInitializedAsync()
@@ -192,9 +192,13 @@
             {
                 Vehicle = await HttpClient.GetFromJsonAsync<VehicleModel>($"api/Vehicle/{vehicleId}");
                 Model = await HttpClient.GetFromJsonAsync<ModelModel>($"api/Model/{Vehicle.ModelId}");
-                _maintenance = await HttpClient.GetFromJsonAsync<IList<MaintenanceModel>>($"api/Maintenance");
+                _maintenance = await HttpClient.GetFromJsonAsync<IList<MaintenanceModel>>($"api/Maintenance/ByVehicleId/{vehicleId}");                
                 _model = await HttpClient.GetFromJsonAsync<IList<ModelModel>>($"api/Model");
 
+            }
+            if (_maintenance == null)
+            {
+                _maintenance = Vehicle.Maintenance;
             }
         }
     }
@@ -235,8 +239,11 @@
         {
             await JSRuntime.InvokeVoidAsync("alert", response.ReasonPhrase);
         }
+        else
+        {
+            _maintenance = await HttpClient.GetFromJsonAsync<IList<MaintenanceModel>>($"api/Maintenance/ByVehicleId/{Vehicle.Id}");
+        }
 
         _modalMode = ModalMode.Closed;
-        _maintenance = await HttpClient.GetFromJsonAsync<IList<MaintenanceModel>>("api/Maintenance");
     }
 }

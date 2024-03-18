@@ -29,10 +29,14 @@ namespace Server.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var vehicle = VehicleRepository.Find(id);
+            var vehicle = VehicleRepository
+                .Include(m => m.Maintenances)
+                .FirstOrDefault(x => x.Id == id);
             if (vehicle == null) return NotFound();
             return Ok(vehicle);
         }
+        
+        
 
         [HttpPost("AddVehicle")]
         public IActionResult CreateVehicle(string matriculation, string modelName, int year, int mileage, EnergyType energie)

@@ -33,6 +33,14 @@ namespace Server.Controllers
             if (maintenance == null) return NotFound();
             return Ok(maintenance);
         }
+
+        [HttpGet("ByVehicleId/{vehicleId}")]
+        public IActionResult GetMaintenancesByVehicleId(int vehicleId)
+        {
+            var maintenances = MaintenanceRepository.Where(m => m.VehicleId == vehicleId).ToList();
+            if (maintenances.Count == 0) maintenances = [];
+            return Ok(maintenances);
+        }
         
         [HttpPost("AddMaintenance")]
         public IActionResult CreateMaintenance(int vehicleId, int mileageMaintenance, string worksPerformed)
