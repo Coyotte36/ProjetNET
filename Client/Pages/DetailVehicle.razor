@@ -59,7 +59,7 @@
             </div>
             <div class="form-group">
                 <label for="vehiclemodel">Modèle :</label>
-                <select class="form-control" id="vehiclemodel" @bind="@NewModelId">
+                <select class="form-control" id="vehiclemodel" @bind="@Vehicle.ModelId">
                     @foreach (var model in _model)
                     {
                         <option value="@model.Id">@model.Name</option>
@@ -76,7 +76,7 @@
             </div>
             <div class="form-group">
                 <label for="vehicleEnergie">Energie :</label>
-                <select class="form-control" id="vehicleEnergie" @bind="@NewEnergie">
+                <select class="form-control" id="vehicleEnergie" @bind="@Vehicle.Energie">
                     @foreach (var vehicle in Enum.GetValues(typeof(EnergyType)))
                     {
                         <option value="@vehicle">@vehicle.ToString()</option>
@@ -125,10 +125,7 @@
             </div>
             <div class="modal-body">
                 <form>
-                    <div class="form-group">
-                        <label for="mileageMaintenance">Kilométrage lors de l'entretien :</label>
-                        <input type="number" class="form-control" id="mileageMaintenance" @bind="@NewMileageMaintenance" />
-                    </div>
+
                     <div class="form-group">
                         <label for="worksPerformed">Travaux effectués :</label>
                         <textarea class="form-control" id="worksPerformed" rows="3" @bind="@NewWorksPerformed"></textarea>
@@ -141,6 +138,7 @@
             </div>
         </div>
     </div>
+
 </div>
 
 
@@ -155,15 +153,25 @@
     
     private async Task SaveChanges()
     {
-        _isEditMode = false; 
+        _isEditMode = false;
+        await OnEdit(Vehicle);
     }
 
     private enum ModalMode
     {
         Add,
+        Edit,
         Closed
     }
+    
+    public int NewYear { get; set; }
+    public int NewMileage { get; set; }
+    public string NewMatriculation { get; set; }
+    private ModelModel _selectedModel;
+    private EnergyType _selectedEnergie;
+    
     private ModalMode _modalMode = ModalMode.Closed;
+    private VehicleModel _selectedVehicle;
     
     public EnergyType NewEnergie { get; set; }
     public int NewModelId { get; set; }
@@ -181,6 +189,8 @@
 
     public IList<ModelModel> _model;
     public IList<MaintenanceModel> _maintenance;
+    public IList<VehicleModel> _vehicle;
+
 
 
     protected override async Task OnInitializedAsync()
@@ -194,12 +204,17 @@
                 Model = await HttpClient.GetFromJsonAsync<ModelModel>($"api/Model/{Vehicle.ModelId}");
                 _maintenance = await HttpClient.GetFromJsonAsync<IList<MaintenanceModel>>($"api/Maintenance/ByVehicleId/{vehicleId}");                
                 _model = await HttpClient.GetFromJsonAsync<IList<ModelModel>>($"api/Model");
+                _vehicle = await HttpClient.GetFromJsonAsync<IList<VehicleModel>>($"api/Vehicle");
+                _selectedModel = Model;            
+                _selectedEnergie = Vehicle.Energie;
+                
 
             }
             if (_maintenance == null)
             {
                 _maintenance = Vehicle.Maintenance;
             }
+            StateHasChanged();
         }
     }
 
@@ -221,6 +236,9 @@
             case ModalMode.Add:
                 await OnAdd();
                 break;
+            case ModalMode.Edit:
+                await OnEdit(_selectedVehicle);
+                break;
         }
     }
 
@@ -229,11 +247,11 @@
         var maintenance = new MaintenanceModel
         {
             VehicleId = Vehicle.Id,
-            MileageMaintenance = NewMileageMaintenance,
+            MileageMaintenance = Vehicle.Mileage,
             WorksPerformed = NewWorksPerformed
         };
 
-        var response = await HttpClient.PostAsync($"api/Maintenance/AddMaintenance?vehicleId={Uri.EscapeDataString(Vehicle.Id.ToString())}&mileageMaintenance={Uri.EscapeDataString(NewMileageMaintenance.ToString())}&worksPerformed={Uri.EscapeDataString(NewWorksPerformed)}", null);
+        var response = await HttpClient.PostAsync($"api/Maintenance/AddMaintenance?vehicleId={Uri.EscapeDataString(Vehicle.Id.ToString())}&mileageMaintenance={Uri.EscapeDataString(Vehicle.Mileage.ToString())}&worksPerformed={Uri.EscapeDataString(NewWorksPerformed)}", null);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -246,4 +264,32 @@
 
         _modalMode = ModalMode.Closed;
     }
+    
+    private async Task OnEdit(VehicleModel vehicle)
+    {
+        var editedVehicle = new VehicleModel
+        {
+            Id = vehicle.Id,
+            ModelId = Vehicle.ModelId,
+            Year = Vehicle.Year,
+            Mileage = Vehicle.Mileage,
+            Matriculation = Vehicle.Matriculation,
+            Energie = Vehicle.Energie,
+        };
+
+        var response = await HttpClient.PutAsJsonAsync($"api/Vehicle/Edit/{vehicle.Id}?modelId={Uri.EscapeDataString(Vehicle.ModelId.ToString())}&year={Uri.EscapeDataString(Vehicle.Year.ToString())}&mileage={Uri.EscapeDataString(Vehicle.Mileage.ToString())}&matriculation={Uri.EscapeDataString(Vehicle.Matriculation)}&energie={Uri.EscapeDataString(Vehicle.Energie.ToString())}", editedVehicle);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", response.ReasonPhrase);
+        }
+        else
+        {
+            _modalMode = ModalMode.Closed;
+            Vehicle = await HttpClient.GetFromJsonAsync<VehicleModel>($"api/Vehicle/{vehicle.Id}");
+            Model = await HttpClient.GetFromJsonAsync<ModelModel>($"api/Model/{Vehicle.ModelId}");
+            StateHasChanged();
+        }
+    }
+    
 }

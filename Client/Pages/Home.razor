@@ -28,15 +28,17 @@
                     @foreach (var vehicle in _vehicle)
                     {
                         var model = _model.FirstOrDefault(m => m.Id == vehicle.ModelId);
-                        var maintenance = _maintenance.FirstOrDefault(m => m.Id == model.Id);
-                        if (maintenance != null)
+                        if (model != null)
                         {
-                            var maintenanceDelay = model.MaintenanceFrequency - maintenance.MileageMaintenance;                            if (maintenanceDelay > 0)
+                            var maintenanceDelay = vehicle.Mileage - model.MaintenanceFrequency;
+                            if (maintenanceDelay > 0)
                             {
                                 <tr>
                                     <td>@model.Brand</td>
                                     <td>@model.Name</td>
-                                    <td>@vehicle.Matriculation</td>
+                                    <td>
+                                        <a href="/vehicle/detail/@vehicle.Id">@vehicle.Matriculation</a>
+                                    </td>
                                     <td>@maintenanceDelay kms</td>
                                 </tr>
                             }
@@ -50,16 +52,16 @@
 </div>
 
 @code {
-    public IList<VehicleModel>_vehicle;
+    public IList<VehicleModel> _vehicle;
     public IList<ModelModel> _model;
     public IList<MaintenanceModel> _maintenance;
 
-    
+
     protected override async Task OnInitializedAsync()
     {
         _vehicle = await HttpClient.GetFromJsonAsync<IList<VehicleModel>>("api/Vehicle");
         _model = await HttpClient.GetFromJsonAsync<IList<ModelModel>>("api/Model");
         _maintenance = await HttpClient.GetFromJsonAsync<IList<MaintenanceModel>>($"api/Maintenance");
-
     }
+
 }

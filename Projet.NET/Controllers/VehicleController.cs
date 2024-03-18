@@ -30,28 +30,28 @@ namespace Server.Controllers
         public IActionResult Get(int id)
         {
             var vehicle = VehicleRepository
-                .Include(m => m.Maintenances)
                 .FirstOrDefault(x => x.Id == id);
             if (vehicle == null) return NotFound();
             return Ok(vehicle);
         }
-        
-        
+
+
 
         [HttpPost("AddVehicle")]
-        public IActionResult CreateVehicle(string matriculation, string modelName, int year, int mileage, EnergyType energie)
+        public IActionResult CreateVehicle(string matriculation, string modelName, int year, int mileage,
+            EnergyType energie)
         {
-            
+
             if (matriculation.Length < 7 || matriculation.Length > 9)
             {
                 return BadRequest("L'immatriculation doit avoir entre 7 et 9 caractères.");
             }
-            
-            if (mileage <= 0 )
+
+            if (mileage <= 0)
             {
                 return BadRequest("Le kilométrage doit être un nombre positif");
             }
-            
+
             // Recherche du modèle par son nom dans la base de données
             var model = _context.Models.FirstOrDefault(m => m.Name == modelName);
             if (model == null)
@@ -75,7 +75,7 @@ namespace Server.Controllers
 
             return Ok();
         }
-        
+
         [HttpDelete("{id}")]
         public void DeleteVehicle(int id)
         {
@@ -86,5 +86,22 @@ namespace Server.Controllers
 
         }
 
+        [HttpPut("Edit/{id}")]
+        public IActionResult UpdateVehicle(int id, int modelId, int year, int mileage, string matriculation,
+            EnergyType energie)
+        {
+            var existingVehicle = VehicleRepository.FirstOrDefault(x => x.Id == id);
+
+            existingVehicle.ModelId = modelId;
+            existingVehicle.Year = year;
+            existingVehicle.Mileage = mileage;
+            existingVehicle.Matriculation = matriculation;
+            existingVehicle.Energie = energie;
+
+            _context.SaveChanges();
+            return Ok();
+
+        }
     }
 }
+
